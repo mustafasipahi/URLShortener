@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="db_links@localhost" uuid="f1acb85e-9a98-44a5-966e-e40603de9966">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/db_links</jdbc-url>
+      <driver-properties>
+        <property name="serverTimezone" value="Turkey" />
+      </driver-properties>
+    </data-source>
+  </component>
+</project>
