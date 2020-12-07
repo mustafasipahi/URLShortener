@@ -10,7 +10,96 @@
 <th:block th:insert="template :: menu"/>
 
 <div class="container">
-    <h1>Burası Ana Sayfadır</h1>
+    <th:block th:if="${isLoggedIn ne null and not isLoggedIn}" class="card mt-5">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-login">Giriş Yap</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-register">Üye Ol</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="tab-login">
+
+                <div th:if="${isLoggedIn ne null and not isLoggedIn}" class="card mt-5">
+                    <div class="card-header text-center">
+                        <h4 class="card-title mb-1">Giriş Yapın</h4>
+                    </div>
+                    <form method="post" action="/login">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="textEmail">E-posta Adresiniz : </label>
+                                <input th:value="${email ne null ? email : ''}" id="textEmail2" class="form-control"
+                                       name="email"
+                                       type="email" required="required"
+                                       placeholder="E-posta Adresiniz :"/>
+                                <small th:if="${emailError ne null}" th:text="${emailError}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="textSifre">Şifreniz : </label>
+                                <input id="textSifre2" class="form-control" name="password" type="password"
+                                       required="required"
+                                       placeholder="Sİfreniz :"/>
+                                <small th:if="${passwordError ne null}" th:text="${passwordError}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                            <div class="form-group">
+                                <input id="checkRemember2" name="remember" type="checkbox"/>
+                                <label for="checkRemember">Beni Hatırla</label>
+                            </div>
+                        </div>
+
+                        <div class="card-footer text-right">
+                            <button class="btn btn-outline-success" type="submit">Giriş Yap</button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+            <div class="tab-pane fade" id="tab-register">
+
+                <div th:if="${isLoggedIn ne null and not isLoggedIn}" class="card mt-5">
+                    <div class="card-header text-center">
+                        <h4 class="card-title mb-1">Üye Olun</h4>
+                    </div>
+                    <form method="post" action="/login">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="textEmail">E-posta Adresiniz : </label>
+                                <input th:value="${email ne null ? email : ''}" id="textEmail" class="form-control" name="email"
+                                       type="email" required="required"
+                                       placeholder="E-posta Adresiniz :"/>
+                                <small th:if="${emailError ne null}" th:text="${emailError}" class="form-text text-danger"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="textSifre">Şifreniz : </label>
+                                <input id="textSifre" class="form-control" name="password" type="password" required="required"
+                                       placeholder="Sİfreniz :"/>
+                                <small th:if="${passwordError ne null}" th:text="${passwordError}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                            <div class="form-group">
+                                <input id="checkRemember" name="remember" type="checkbox"/>
+                                <label for="checkRemember">Beni Hatırla</label>
+                            </div>
+                        </div>
+
+                        <div class="card-footer text-right">
+                            <button class="btn btn-outline-success" type="submit">Giriş Yap</button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </th:block>
+
+
+
 </div>
 
 <th:block th:insert="template :: script"/>

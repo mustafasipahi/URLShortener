@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html  xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 
     <th:block th:fragment="meta">
@@ -16,22 +16,28 @@
 <body>
 
 <th:block th:fragment="menu">
-    <nav class="navbar navbar-dark bg-primary">
-        <a href="/" class="navbar-branf">URL Shortener</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">URL Shortener</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <ul class="navbar-nav ml-5 mr-auto">
-            <li class="nav-item active">
-                <a href="/" class="nav-link">Ana Sayfa</a>
-            </li>
-
-            <li class="nav-item active">
-                <a href="/" class="nav-link">Hesabım</a>
-            </li>
-
-            <li class="nav-item active">
-                <a href="/" class="nav-link">Giriş Yap</a>
-            </li>
-        </ul>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Ana Sayfa </span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile">Hesabım</a>
+                </li>
+                <li th:if="${isLoggedIn ne null and isLoggedIn}" class="nav-item">
+                    <form method="post" action="/logout">
+                        <button class="btn btn-danger" type="submit">Çıkış Yap</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </nav>
 </th:block>
 

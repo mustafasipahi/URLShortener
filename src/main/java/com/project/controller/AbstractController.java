@@ -72,7 +72,7 @@ public abstract class AbstractController {
         LoginToken loginToken = getLoginToken();
         return (loginToken.getType() == LoginType.ANONYMOUS);
     }
-    private User getLoggedInUser(){
+    public User getLoggedInUser(){
         if (isLoggedIn()){
             return getLoginToken().getUser();
         }
