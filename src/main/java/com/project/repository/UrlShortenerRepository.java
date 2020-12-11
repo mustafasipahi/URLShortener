@@ -1,5 +1,6 @@
 package com.project.repository;
 
+import com.project.model.UrlShortener;
 import com.project.model.LoginToken;
 import com.project.model.User;
 import com.project.repository.baserepo.MyEntityRepository;
@@ -8,9 +9,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface LoginTokenRepository extends MyEntityRepository<LoginToken> {
+public interface UrlShortenerRepository extends MyEntityRepository<UrlShortener> {
 
-    public LoginToken findByUUID(@Param("UUID") String UUID);
+    public Optional<UrlShortener> findByShortUrl(@Param("shortUrl")String shortUrl);
+    public Optional<UrlShortener> findByLongUrl(@Param("longUrl")String longUrl);
 }

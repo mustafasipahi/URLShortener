@@ -9,30 +9,30 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
-@Table(name = "t_login_tokens")
+@Table(name = "login_tokens")
 public class LoginToken extends MyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "token_id",nullable = false,unique = true)
+    @Column(name = "id",nullable = false,unique = true)
     private int id;
 
-    @Column(name = "token_UUID",nullable = false,unique = true,length = 36)
+    @Column(name = "UUID",nullable = false,unique = true,length = 36)
     private String UUID;
                                     // (EnumType.ORDINAL) =   Enum değeri yazar 0/1 gibi
-    @Enumerated(EnumType.ORDINAL)    // (EnumType.STRING)  =   Enum ismini yazar ne yazıldıysa
-    @Column(name = "token_type",nullable = false)
+    @Enumerated(EnumType.STRING)    // (EnumType.STRING)  =   Enum ismini yazar ne yazıldıysa
+    @Column(name = "type",nullable = false)
     private LoginType type;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "token_date_created")
+    @Column(name = "date_created")
     private Date dateCreated = new Date();
 
-    @Column(name = "token_expiration_duration",nullable = false)
+    @Column(name = "expiration_duration",nullable = false)
     private Long expiration_duration = 0L;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "token_date_logged_out")
+    @Column(name = "date_logged_out")
     private Date dateLoggedOut = null;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -40,7 +40,7 @@ public class LoginToken extends MyEntity {
     private User user = null;
 
     @OneToMany(mappedBy = "tokenId",fetch = FetchType.LAZY)
-    private List<Link> links = new LinkedList<>();
+    private List<UrlShortener> urlShorteners = new LinkedList<>();
 
     public boolean isExpired(){
         Date expirationDate = new Date(dateCreated.getTime() + expiration_duration);
@@ -113,11 +113,11 @@ public class LoginToken extends MyEntity {
         this.user = user;
     }
 
-    public List<Link> getLinks() {
-        return links;
+    public List<UrlShortener> getLinks() {
+        return urlShorteners;
     }
 
-    public void setLinks(List<Link> links) {
-        this.links = links;
+    public void setLinks(List<UrlShortener> urlShorteners) {
+        this.urlShorteners = urlShorteners;
     }
 }

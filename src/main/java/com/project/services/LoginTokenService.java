@@ -50,11 +50,7 @@ public class LoginTokenService implements MyEntityService<LoginToken> {
 
     @Override
     public boolean existById(Integer id) {
-        final Optional<LoginToken> fromDb = findById(id);
-        if (fromDb.isPresent()){
-            return true;
-        }
-        return false;
+        return findById(id).isPresent();
     }
 
     public LoginToken saveAnonymousLoginToken(){

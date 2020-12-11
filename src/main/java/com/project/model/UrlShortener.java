@@ -6,22 +6,22 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "t_link")
-public class Link extends MyEntity {
+@Table(name = "url_shortener")
+public class UrlShortener extends MyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "link_id",nullable = false,unique = true)
+    @Column(name = "id",nullable = false,unique = true)
     private int id;
 
-    @Column(name = "link_short_url",nullable = false,unique = true,length = 4)
+    @Column(name = "short_url",nullable = false,unique = true)
     private String shortUrl;
 
-    @Column(name = "link_long_url",nullable = false,length = 2083)
+    @Column(name = "long_url",nullable = false,length = 2083)
     private String longUrl;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "link_date_created",nullable = false)
+    @Column(name = "date_created",nullable = false)
     private Date createdDate;
 
     @ManyToOne(fetch = FetchType.EAGER)

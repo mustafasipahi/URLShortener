@@ -5,7 +5,7 @@ import com.project.model.User;
 import com.project.services.LoginTokenService;
 import com.project.services.UserService;
 import com.project.util.Constants;
-import org.apache.tomcat.util.bcel.Const;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +39,7 @@ public class LoginController extends AbstractController {
         if (!userByEmail.isPresent()) {
             redirectAttributes.addFlashAttribute("email", email);
             redirectAttributes.addFlashAttribute("emailError", "Bu E-posta Adresiyle Kayıtlı Bir Kullanıcı Bulunamadı");
-        } else if (!checkPassword(userByEmail.get(), email, password)) {
+        } else if (!userByEmail.get().checkPassword(password)) {
             redirectAttributes.addFlashAttribute("email", email);
             redirectAttributes.addFlashAttribute("passwordError", "Şifrenizi Yanlış Girdiniz");
         } else {
@@ -52,6 +52,80 @@ public class LoginController extends AbstractController {
         }
         return "redirect:/";
     }
+
+    @PostMapping("/register")
+    public String register(RedirectAttributes redirectAttributes,
+                           HttpServletResponse response,
+                           @RequestParam String registerEmail,
+                           @RequestParam String registerPassword,
+                           @RequestParam String registerPasswordAgain){
+
+        redirectAttributes.addFlashAttribute("register",true);
+
+        if (!isValidEmail(registerEmail)){
+            redirectAttributes.addFlashAttribute("registerEmail", registerEmail);
+            redirectAttributes.addFlashAttribute("registerEmailError", "Lütfen Geçerli Bir Email Adresi Giriniz");
+            return "redirect:/";
+        }
+        try {
+            isValidPassword(registerPassword);
+        }catch (IllegalArgumentException exception){
+            redirectAttributes.addFlashAttribute("registerPasswordError", exception.getMessage());
+            return "redirect:/";
+        }
+        if (!registerPassword.equals(registerPasswordAgain)){
+            redirectAttributes.addFlashAttribute("registerPassword",registerPassword);
+            redirectAttributes.addFlashAttribute("registerPasswordError", "Şifre Uyuşmuyor");
+            return "redirect:/";
+        }
+
+        Optional<User> byEmail = userService.findByEmail(registerEmail);
+        if (byEmail.isPresent()){
+            redirectAttributes.addFlashAttribute("registerEmail", registerEmail);
+            redirectAttributes.addFlashAttribute("registerEmailError", "Bu Email İle Kayıtlı Bir Kullanıcı Vardır");
+            return "redirect:/";
+        }
+        User user = new User();
+        user.setEmail(registerEmail);
+        user.setDateCreated(new Date());
+        user.bcryptAndSetPassword(registerPassword);
+        userService.save(user);
+        LoginToken loginToken = loginTokenService.saveUserLoginToken(user);
+        Cookie cookie = new Cookie(Constants.LOGGIN_TOKEN_COOKIE_NAME,loginToken.getUUID());
+        cookie.setMaxAge((int)(loginToken.getExpiration_duration()/1000));
+        response.addCookie(cookie);
+        return "redirect:/";
+    }
+
+    private boolean isValidEmail(String email){
+        return EmailValidator.getInstance(false).isValid(email);
+    }
+
+    private boolean isValidPassword(String password){
+        password = password.trim();
+        if (password.length() < 5){
+            throw new IllegalArgumentException("Şifreniz En Az 5 Karakterli Olmalıdır");
+        }
+        if (password.length() > 16){
+            throw new IllegalArgumentException("Şifreniz En Fazla 16 Karakterli Olmalıdır");
+        }
+        boolean containsDigitAndLetter = containsDigitAndLetter(password);
+        if (!containsDigitAndLetter){
+            throw new IllegalArgumentException("Şifreniz En Az 1 Karakter ve Harf İçermelidir");
+        }
+        return true;
+    }
+
+    private boolean containsDigitAndLetter(String password){
+        boolean containsDigit = false;
+        boolean containsLetter = false;
+        for(Character c : password.toCharArray()){
+            if (Character.isDigit(c)) containsDigit = true;
+            if (Character.isLetter(c)) containsLetter = true;
+        }
+        return containsDigit && containsLetter;
+    }
+
     @PostMapping("/logout")
     public String logOut(HttpSession session, HttpServletResponse response){
         LoginToken loginToken = getLoginToken();
@@ -63,11 +137,5 @@ public class LoginController extends AbstractController {
         response.addCookie(cookie);
         session.invalidate();
         return "redirect:/";
-    }
-
-    public boolean checkPassword(User user, String email, String password) {
-        return userService.findByEmail(email)
-                .map(value -> value.getPassword().equals(password))
-                .orElse(false);
     }
 }

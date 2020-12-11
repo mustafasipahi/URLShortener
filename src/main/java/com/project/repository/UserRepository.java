@@ -11,6 +11,5 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends MyEntityRepository<User> {
 
-    //@Query("SELECT u FROM User u WHERE u.email=:email")
     public Optional<User> findByEmail(@Param("email") String email);
 }

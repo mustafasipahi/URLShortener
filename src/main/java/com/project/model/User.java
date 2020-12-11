@@ -9,22 +9,22 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
-@Table(name="t_users")
+@Table(name="users")
 public class User extends MyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id",nullable = false,unique = true)
+    @Column(name = "id",nullable = false,unique = true)
     private int id;
 
-    @Column(name = "user_email",nullable = false,unique = true,length = 320)
+    @Column(name = "email",nullable = false,unique = true,length = 320)
     private String email;
 
-    @Column(name = "user_password",nullable = false,unique = true,length = 60)
+    @Column(name = "password",nullable = false,unique = true,length = 60)
     private String password;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "user_date_created",nullable = false)
+    @Column(name = "date_created",nullable = false)
     private Date dateCreated = new Date();
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
@@ -60,10 +60,6 @@ public class User extends MyEntity {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Date getDateCreated() {
         return dateCreated;
     }
@@ -76,7 +72,4 @@ public class User extends MyEntity {
         return loginTokenList;
     }
 
-    public void setLoginTokenList(List<LoginToken> loginTokenList) {
-        this.loginTokenList = loginTokenList;
-    }
 }

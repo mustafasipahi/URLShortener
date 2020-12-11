@@ -13,10 +13,12 @@
     <th:block th:if="${isLoggedIn ne null and not isLoggedIn}" class="card mt-5">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#tab-login">Giriş Yap</a>
+                <a th:class="${((register eq null or not register) ? 'active' : '') + ' nav-link'}" id="home-tab"
+                   data-toggle="tab" href="#tab-login">Giriş Yap</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#tab-register">Üye Ol</a>
+                <a th:class="${((register ne null and register) ? 'active' : '') + ' nav-link'}" id="profile-tab"
+                   data-toggle="tab" href="#tab-register">Üye Ol</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -30,54 +32,18 @@
                         <div class="card-body">
                             <div class="form-group">
                                 <label for="textEmail">E-posta Adresiniz : </label>
-                                <input th:value="${email ne null ? email : ''}" id="textEmail2" class="form-control"
+                                <input th:value="${email ne null ? email : ''}" id="textEmail" class="form-control"
                                        name="email"
                                        type="email" required="required"
-                                       placeholder="E-posta Adresiniz :"/>
+                                       placeholder="E-posta Adresiniz"/>
                                 <small th:if="${emailError ne null}" th:text="${emailError}"
                                        class="form-text text-danger"></small>
                             </div>
                             <div class="form-group">
                                 <label for="textSifre">Şifreniz : </label>
-                                <input id="textSifre2" class="form-control" name="password" type="password"
+                                <input id="textSifre" class="form-control" name="password" type="password"
                                        required="required"
-                                       placeholder="Sİfreniz :"/>
-                                <small th:if="${passwordError ne null}" th:text="${passwordError}"
-                                       class="form-text text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <input id="checkRemember2" name="remember" type="checkbox"/>
-                                <label for="checkRemember">Beni Hatırla</label>
-                            </div>
-                        </div>
-
-                        <div class="card-footer text-right">
-                            <button class="btn btn-outline-success" type="submit">Giriş Yap</button>
-                        </div>
-
-                    </form>
-                </div>
-
-            </div>
-            <div class="tab-pane fade" id="tab-register">
-
-                <div th:if="${isLoggedIn ne null and not isLoggedIn}" class="card mt-5">
-                    <div class="card-header text-center">
-                        <h4 class="card-title mb-1">Üye Olun</h4>
-                    </div>
-                    <form method="post" action="/login">
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="textEmail">E-posta Adresiniz : </label>
-                                <input th:value="${email ne null ? email : ''}" id="textEmail" class="form-control" name="email"
-                                       type="email" required="required"
-                                       placeholder="E-posta Adresiniz :"/>
-                                <small th:if="${emailError ne null}" th:text="${emailError}" class="form-text text-danger"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="textSifre">Şifreniz : </label>
-                                <input id="textSifre" class="form-control" name="password" type="password" required="required"
-                                       placeholder="Sİfreniz :"/>
+                                       placeholder="Sifreniz"/>
                                 <small th:if="${passwordError ne null}" th:text="${passwordError}"
                                        class="form-text text-danger"></small>
                             </div>
@@ -95,13 +61,91 @@
                 </div>
 
             </div>
+            <div class="tab-pane" id="tab-register">
+
+                <div th:if="${isLoggedIn ne null and not isLoggedIn}" class="card mt-5">
+                    <div class="card-header text-center">
+                        <h4 class="card-title mb-1">Üye Ol</h4>
+                    </div>
+                    <form method="post" action="/register">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="registerEmail">E-posta Adresiniz : </label>
+                                <input th:value="${registerEmail ne null ? email : ''}" id="registerEmail"
+                                       class="form-control"
+                                       name="registerEmail"
+                                       type="email" required="required"
+                                       placeholder="E-posta Adresiniz"/>
+                                <small th:if="${registerEmailError ne null}" th:text="${registerEmailError}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="registerPassword">Şifreniz : </label>
+                                <input id="registerPassword" class="form-control" name="registerPassword"
+                                       type="password"
+                                       required="required"
+                                       placeholder="Sifreniz"/>
+                                <small th:if="${registerPasswordError ne null}" th:text="${registerPasswordError}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="registerPasswordAgain">Şifreniz : </label>
+                                <input id="registerPasswordAgain" class="form-control" name="registerPasswordAgain"
+                                       type="password"
+                                       required="required"
+                                       placeholder="Sifreniz"/>
+                                <small th:if="${registerPasswordAgainError ne null}"
+                                       th:text="${registerPasswordAgainError}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+
+                        <div class="card-footer text-right">
+                            <button class="btn btn-outline-success" type="submit">Giriş Yap</button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
         </div>
     </th:block>
 
+    <div th:if="${newUrl ne null and newUrl}" class="card mt-5">
+        <div class="card-header text-center">
+            <h4 class="card-title mb-4">Tebriler : </h4>
+            <h6 class="card-subtitle">Artık Daha Kısa Bir Linkiniz Var</h6>
+        </div>
 
+        <div th:with="url=${shortUrl}" class="card-body text-center">
+            <h2 th:text="${url}" class="display-5 fill-width"></h2>
+            <p class="text-center mt-2 mb-5">
+                Hemen
+                <button class="btn btn-outline-secondary mx-2" type="button">Kopyalayın</button>
+                Ve İstediğiniz Yerde Paylaşın
+                <span class="ml-5"></span>
+                Kısalttığız Url Adresine Gitmek İçin
+                <a th:href="${url}" class="btn btn-link">Tıklayınız</a>
+            </p>
+        </div>
+    </div>
 
+    <div class="card mt-5">
+        <div class="card-header text-center">
+            <h4 class="card-title mb-1">Link Kısaltın</h4>
+        </div>
+
+        <form method="post" action="/shorten" class="card-body text-center">
+            <div class="form-group">
+                <label>Kısaltmak İstediğiniz Url Adresini Giriniz : </label>
+                <input class="form-control" id="longUrl" name="longUrl" required="required" type="url"
+                       placeholder="Kısaltmak İstediğiniz Linki Yazınız">
+                <small th:if="${longUrlError ne null}" th:text="${longUrlError}" class="form-text text-danger"></small>
+            </div>
+            <button class="btn btn-outline-success" type="submit">Hemen Kısaltın</button>
+        </form>
+    </div>
 </div>
-
 <th:block th:insert="template :: script"/>
 </body>
 </html>

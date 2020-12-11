@@ -49,10 +49,6 @@ public class UserService implements MyEntityService<User> {
 
     @Override
     public boolean existById(Integer id) {
-        final Optional<User> fromDb = findById(id);
-        if (fromDb.isPresent()){
-            return true;
-        }
-        return false;
+        return findById(id).isPresent();
     }
 }
