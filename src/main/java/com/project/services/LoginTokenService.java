@@ -1,6 +1,7 @@
 package com.project.services;
 
 import com.project.model.LoginToken;
+import com.project.model.UrlShortener;
 import com.project.model.User;
 import com.project.repository.LoginTokenRepository;
 import com.project.services.baseservice.MyEntityService;
@@ -41,6 +42,10 @@ public class LoginTokenService implements MyEntityService<LoginToken> {
 
     public LoginToken findByUUID(String UUID){
         return repository.findByUUID(UUID);
+    }
+
+    public LoginToken findByUserId(Integer userId){
+        return repository.findByUserId(userId);
     }
 
     @Override

@@ -16,28 +16,36 @@
         .fill-width{
             width: 100%;
         }
+        .overflow-text{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     </style>
 
 </head>
 <body>
 
-<th:block th:fragment="menu">
+<th:block th:fragment="menu (activePage)">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <a class="navbar-brand" href="#">URL Shortener</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        <a class="navbar-brand" >URL Shortener</a>
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="toggle navigation">
+            <span class="navbar-toggle-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
+                <li th:class="${'nav-item' + (activePage eq '/' ? ' active' : '')}">
                     <a class="nav-link" href="/">Ana Sayfa </span></a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/profile">Hesabım</a>
+                <li th:class="${'nav-item' + (activePage eq '/account' ? ' active' : '')}">
+                    <a class="nav-link" href="/account">Hesabım</a>
                 </li>
-                <li th:if="${isLoggedIn ne null and isLoggedIn}" class="nav-item">
+                <li th:if="${not isLoggedIn}" class="nav-item">
+                    <a class="nav-link" href="/login">Giriş Yap</a>
+                </li>
+                <li th:if="${isLoggedIn}" class="nav-item">
                     <form method="post" action="/logout">
                         <button class="btn btn-danger" type="submit">Çıkış Yap</button>
                     </form>

@@ -14,6 +14,7 @@ import java.util.Optional;
 @Repository
 public interface UrlShortenerRepository extends MyEntityRepository<UrlShortener> {
 
-    public Optional<UrlShortener> findByShortUrl(@Param("shortUrl")String shortUrl);
-    public Optional<UrlShortener> findByLongUrl(@Param("longUrl")String longUrl);
+    public Optional<UrlShortener> findByShortUrl(String shortUrl);
+    public Optional<UrlShortener> findByLongUrl(String longUrl);
+    public List<UrlShortener> findByTokenId(LoginToken tokenId);
 }

@@ -1,6 +1,7 @@
 package com.project.repository;
 
 import com.project.model.LoginToken;
+import com.project.model.UrlShortener;
 import com.project.model.User;
 import com.project.repository.baserepo.MyEntityRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,5 +13,6 @@ import java.util.List;
 @Repository
 public interface LoginTokenRepository extends MyEntityRepository<LoginToken> {
 
-    public LoginToken findByUUID(@Param("UUID") String UUID);
+    public LoginToken findByUUID(String UUID);
+    public LoginToken findByUserId(Integer userId);
 }

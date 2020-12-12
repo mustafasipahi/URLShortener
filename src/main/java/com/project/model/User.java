@@ -27,8 +27,8 @@ public class User extends MyEntity {
     @Column(name = "date_created",nullable = false)
     private Date dateCreated = new Date();
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    private List<LoginToken> loginTokenList = new LinkedList<>();
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
+    private final List<LoginToken> loginTokenList = new LinkedList<>();
 
     public void bcryptAndSetPassword(String password){
         this.password = Constants.getPasswordEncoder().encode(password);

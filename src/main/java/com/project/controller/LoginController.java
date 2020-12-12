@@ -39,17 +39,20 @@ public class LoginController extends AbstractController {
         if (!userByEmail.isPresent()) {
             redirectAttributes.addFlashAttribute("email", email);
             redirectAttributes.addFlashAttribute("emailError", "Bu E-posta Adresiyle Kayıtlı Bir Kullanıcı Bulunamadı");
-        } else if (!userByEmail.get().checkPassword(password)) {
+            return "redirect:/login";
+        }
+        if (!userByEmail.get().checkPassword(password)) {
             redirectAttributes.addFlashAttribute("email", email);
             redirectAttributes.addFlashAttribute("passwordError", "Şifrenizi Yanlış Girdiniz");
-        } else {
-            LoginToken loginToken = loginTokenService.saveUserLoginToken(userByEmail.get());
-            boolean rememberMe = "on".equals(remember);
-            Cookie cookie = new Cookie(Constants.LOGGIN_TOKEN_COOKIE_NAME, loginToken.getUUID());
-            cookie.setMaxAge(rememberMe ? (int) (loginToken.getExpiration_duration() / 1000) : -1);
-            response.addCookie(cookie);
-            session.invalidate();
+            return "redirect:/login";
         }
+        LoginToken loginToken = loginTokenService.findByUserId(userByEmail.get().getId());
+        boolean rememberMe = "on".equals(remember);
+        Cookie cookie = new Cookie(Constants.LOGGIN_TOKEN_COOKIE_NAME, loginToken.getUUID());
+        cookie.setMaxAge(rememberMe ? (int) (loginToken.getExpiration_duration() / 1000) : -1);
+        response.addCookie(cookie);
+        session.invalidate();
+
         return "redirect:/";
     }
 
@@ -58,29 +61,29 @@ public class LoginController extends AbstractController {
                            HttpServletResponse response,
                            @RequestParam String registerEmail,
                            @RequestParam String registerPassword,
-                           @RequestParam String registerPasswordAgain){
+                           @RequestParam String registerPasswordAgain) {
 
-        redirectAttributes.addFlashAttribute("register",true);
+        redirectAttributes.addFlashAttribute("register", true);
 
-        if (!isValidEmail(registerEmail)){
+        if (!isValidEmail(registerEmail)) {
             redirectAttributes.addFlashAttribute("registerEmail", registerEmail);
             redirectAttributes.addFlashAttribute("registerEmailError", "Lütfen Geçerli Bir Email Adresi Giriniz");
             return "redirect:/";
         }
         try {
             isValidPassword(registerPassword);
-        }catch (IllegalArgumentException exception){
+        } catch (IllegalArgumentException exception) {
             redirectAttributes.addFlashAttribute("registerPasswordError", exception.getMessage());
             return "redirect:/";
         }
-        if (!registerPassword.equals(registerPasswordAgain)){
-            redirectAttributes.addFlashAttribute("registerPassword",registerPassword);
+        if (!registerPassword.equals(registerPasswordAgain)) {
+            redirectAttributes.addFlashAttribute("registerPassword", registerPassword);
             redirectAttributes.addFlashAttribute("registerPasswordError", "Şifre Uyuşmuyor");
             return "redirect:/";
         }
 
         Optional<User> byEmail = userService.findByEmail(registerEmail);
-        if (byEmail.isPresent()){
+        if (byEmail.isPresent()) {
             redirectAttributes.addFlashAttribute("registerEmail", registerEmail);
             redirectAttributes.addFlashAttribute("registerEmailError", "Bu Email İle Kayıtlı Bir Kullanıcı Vardır");
             return "redirect:/";
@@ -91,51 +94,81 @@ public class LoginController extends AbstractController {
         user.bcryptAndSetPassword(registerPassword);
         userService.save(user);
         LoginToken loginToken = loginTokenService.saveUserLoginToken(user);
-        Cookie cookie = new Cookie(Constants.LOGGIN_TOKEN_COOKIE_NAME,loginToken.getUUID());
-        cookie.setMaxAge((int)(loginToken.getExpiration_duration()/1000));
+        Cookie cookie = new Cookie(Constants.LOGGIN_TOKEN_COOKIE_NAME, loginToken.getUUID());
+        cookie.setMaxAge((int) (loginToken.getExpiration_duration() / 1000));
         response.addCookie(cookie);
         return "redirect:/";
     }
 
-    private boolean isValidEmail(String email){
-        return EmailValidator.getInstance(false).isValid(email);
-    }
-
-    private boolean isValidPassword(String password){
-        password = password.trim();
-        if (password.length() < 5){
-            throw new IllegalArgumentException("Şifreniz En Az 5 Karakterli Olmalıdır");
-        }
-        if (password.length() > 16){
-            throw new IllegalArgumentException("Şifreniz En Fazla 16 Karakterli Olmalıdır");
-        }
-        boolean containsDigitAndLetter = containsDigitAndLetter(password);
-        if (!containsDigitAndLetter){
-            throw new IllegalArgumentException("Şifreniz En Az 1 Karakter ve Harf İçermelidir");
-        }
-        return true;
-    }
-
-    private boolean containsDigitAndLetter(String password){
-        boolean containsDigit = false;
-        boolean containsLetter = false;
-        for(Character c : password.toCharArray()){
-            if (Character.isDigit(c)) containsDigit = true;
-            if (Character.isLetter(c)) containsLetter = true;
-        }
-        return containsDigit && containsLetter;
-    }
-
     @PostMapping("/logout")
-    public String logOut(HttpSession session, HttpServletResponse response){
+    public String logOut(HttpSession session, HttpServletResponse response) {
         LoginToken loginToken = getLoginToken();
         loginToken.setDateLoggedOut(new Date());
         loginTokenService.save(loginToken);
 
-        Cookie cookie = new Cookie(Constants.LOGGIN_TOKEN_COOKIE_NAME,"");
+        Cookie cookie = new Cookie(Constants.LOGGIN_TOKEN_COOKIE_NAME, "");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         session.invalidate();
         return "redirect:/";
+    }
+
+    @PostMapping("/password-renew")
+    public String renewPassword(RedirectAttributes redirectAttributes,
+                                HttpServletResponse response,
+                                @RequestParam String currentPassword,
+                                @RequestParam String newPassword,
+                                @RequestParam String newPasswordAgain) {
+        if (!isLoggedIn()) return "redirect:/";
+
+        LoginToken loginToken = getLoginToken();
+        User user = loginToken.getUser();
+
+        if (!user.checkPassword(currentPassword)) {
+            redirectAttributes.addFlashAttribute("currentPasswordError", "Mevcut Şifrenizi Yanlış Girdiniz");
+            return "redirect:/account";
+        }
+        try {
+            isValidPassword(newPassword);
+        } catch (IllegalArgumentException exception) {
+            redirectAttributes.addFlashAttribute("newPasswordError", exception.getMessage());
+            return "redirect:/account";
+        }
+        if (!newPassword.equals(newPasswordAgain)) {
+            redirectAttributes.addFlashAttribute("newPasswordAgainError", "Şifreler Birbirleri İle Uyuşmuyor");
+            return "redirect:/account";
+        }
+        user.bcryptAndSetPassword(newPassword);
+        userService.save(user);
+        redirectAttributes.addFlashAttribute("passwordChangeSuccess", "Şifreniz Başarıyla Değiştirildi");
+        return "redirect:/account";
+    }
+
+    private boolean isValidEmail(String email) {
+        return EmailValidator.getInstance(false).isValid(email);
+    }
+
+    private void isValidPassword(String password) {
+        password = password.trim();
+        if (password.length() < 5) {
+            throw new IllegalArgumentException("Şifreniz En Az 5 Karakterli Olmalıdır");
+        }
+        if (password.length() > 16) {
+            throw new IllegalArgumentException("Şifreniz En Fazla 16 Karakterli Olmalıdır");
+        }
+        boolean containsDigitAndLetter = containsDigitAndLetter(password);
+        if (!containsDigitAndLetter) {
+            throw new IllegalArgumentException("Şifreniz En Az 1 Karakter ve Harf İçermelidir");
+        }
+    }
+
+    private boolean containsDigitAndLetter(String password) {
+        boolean containsDigit = false;
+        boolean containsLetter = false;
+        for (Character c : password.toCharArray()) {
+            if (Character.isDigit(c)) containsDigit = true;
+            if (Character.isLetter(c)) containsLetter = true;
+        }
+        return containsDigit && containsLetter;
     }
 }

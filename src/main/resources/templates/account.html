@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/" lang="tr">
+<head>
+    <title>URL Shortener</title>
+    <th:block th:insert="template :: meta"/>
+    <th:block th:insert="template :: style"/>
+</head>
+<body>
+
+<th:block th:insert="template :: menu ('/account')"/>
+
+<div class="container">
+
+    <div class="card mt-5 mb-5">
+
+        <div class="card-header text-center">
+            <h4 class="card-title mb-1">Şifrenizi Yenileyin</h4>
+        </div>
+
+        <form method="post" action="/password-renew">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="textCurrentPassword">Mevcut Şifreniz : </label>
+                    <input id="textCurrentPassword" name="currentPassword" class="form-control" required="required"
+                           type="password">
+                    <small th:if="${currentPasswordError ne null}" th:text="${currentPasswordError}"
+                           class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="textNewPassword">Yeni Şifreniz : </label>
+                    <input id="textNewPassword" name="newPassword" class="form-control" required="required"
+                           type="password">
+                    <small th:if="${newPasswordError ne null}" th:text="${newPasswordError}"
+                           class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="textNewPasswordAgain">Yeni Şifreniz Tekrar : </label>
+                    <input id="textNewPasswordAgain" name="newPasswordAgain" class="form-control" required="required"
+                           type="password">
+                    <small th:if="${newPasswordAgainError ne null}" th:text="${newPasswordAgainError}"
+                           class="form-text text-danger"></small>
+                </div>
+                <div th:if="${passwordChangeSuccess ne null}" class="form-group">
+                    <small th:text="${passwordChangeSuccess}" class="form-text text-success"></small>
+                </div>
+            </div>
+            <div class="card-footer text-right">
+                <button class="btn btn-outline-success" type="submit">Şifrenizi Değiştirin</button>
+            </div>
+        </form>
+
+    </div>
+
+    <div class="card-mt-5">
+        <div class="card-header text-center">
+            <h4 class="card-title mb-1">Oluşturduğunuz Linkler</h4>
+        </div>
+
+        <div class="card-body">
+            <p th:if="${#lists.isEmpty(urlList)}" class="text-center fill-width">
+                Daha Önce Bir Link Oluşturmadınız.
+            </p>
+            <div th:if="${not #lists.isEmpty(urlList)}" class="row mb-5">
+                <div class="text-center col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">
+                    <strong>Tarih</strong>
+                </div>
+                <div class="text-center col-3 col-sm-2 col-md-2 col-lg-1 col-xl-2">
+                    <strong>Kısa Url</strong>
+                </div>
+                <div class="text-center col-3 col-sm-4 col-md-4 col-lg-7 col-xl-7">
+                    <strong>Uzun Url</strong>
+                </div>
+                <div class="text-center col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">
+                    <strong></strong>
+                </div>
+            </div>
+
+            <th:block th:if="${not #lists.isEmpty(urlList)}" th:each="url : ${urlList}">
+                <div class="row mb-2">
+                    <div class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">
+                        <span th:text="${#dates.format(url.getCreatedDate(), 'dd.MM.yy HH:mm:ss')}"></span>
+                    </div>
+                    <div class="col-3 col-sm-2 col-md-2 col-lg-1 col-xl-2 overflow-text">
+                        <span th:text="${url.getKey()}"></span>
+                    </div>
+                    <div class="col-3 col-sm-4 col-md-4 col-lg-7 col-xl-7 overflow-text">
+                        <a th:href="${url.getLongUrl()}" th:text="${url.getLongUrl()}" class="btn btn-link"
+                           target="_blank"></a>
+                    </div>
+                    <div class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2">
+                        <strong></strong>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+
+</div>
+<th:block th:insert="template :: script"/>
+</body>
+</html>

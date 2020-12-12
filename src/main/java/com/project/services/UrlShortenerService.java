@@ -5,6 +5,7 @@ import com.project.model.LoginToken;
 import com.project.model.UrlShortener;
 import com.project.repository.UrlShortenerRepository;
 import com.project.services.baseservice.MyEntityService;
+import com.project.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +13,6 @@ import java.util.*;
 
 @Service
 public class UrlShortenerService implements MyEntityService<UrlShortener> {
-
-    private static final String LOCAL_HOST = "http://localhost:8080/";
 
     @Autowired
     private UrlShortenerRepository repository;
@@ -50,8 +49,8 @@ public class UrlShortenerService implements MyEntityService<UrlShortener> {
         return repository.findByShortUrl(shortUrl);
     }
 
-    public Optional<UrlShortener> findByLongUrl(String longUrl) {
-        return repository.findByLongUrl(longUrl);
+    public List<UrlShortener> findByTokenId(LoginToken tokenId) {
+        return repository.findByTokenId(tokenId);
     }
 
     @Override
@@ -80,15 +79,15 @@ public class UrlShortenerService implements MyEntityService<UrlShortener> {
 
         UrlShortener urlShortener = new UrlShortener();
         urlShortener.setLongUrl(longUrl);
-        urlShortener.setShortUrl(LOCAL_HOST + key);
+        urlShortener.setShortUrl(Constants.LOCAL_HOST + key);
         urlShortener.setCreatedDate(new Date());
         urlShortener.setTokenId(loginToken);
         repository.save(urlShortener);
-        return LOCAL_HOST + key;
+        return Constants.LOCAL_HOST + key;
     }
 
     private boolean existUrl(String key){
-        return findByShortUrl(LOCAL_HOST + key).isPresent();
+        return findByShortUrl(Constants.LOCAL_HOST + key).isPresent();
     }
 
     private char getRandomCharacter(){

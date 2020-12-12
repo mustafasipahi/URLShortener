@@ -69,4 +69,9 @@ public class UrlShortener extends MyEntity {
     public void setTokenId(LoginToken tokenId) {
         this.tokenId = tokenId;
     }
+
+    public String getKey() {
+        final String shortUrl = getShortUrl();
+        return shortUrl.substring(22, shortUrl.length());
+    }
 }
