@@ -46,7 +46,14 @@ public class LoginController extends AbstractController {
             redirectAttributes.addFlashAttribute("passwordError", "Şifrenizi Yanlış Girdiniz");
             return "redirect:/login";
         }
-        LoginToken loginToken = loginTokenService.findByUserId(userByEmail.get().getId());
+        Optional<LoginToken> loginTokenFromDb = loginTokenService.findByUserId(userByEmail.get().getId());
+        LoginToken loginToken = null;
+        if (loginTokenFromDb.isPresent()){
+            loginToken=loginTokenFromDb.get();
+        }else {
+            loginToken = loginTokenService.saveUserLoginToken(userByEmail.get());
+        }
+
         boolean rememberMe = "on".equals(remember);
         Cookie cookie = new Cookie(Constants.LOGGIN_TOKEN_COOKIE_NAME, loginToken.getUUID());
         cookie.setMaxAge(rememberMe ? (int) (loginToken.getExpiration_duration() / 1000) : -1);

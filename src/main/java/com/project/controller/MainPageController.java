@@ -23,8 +23,10 @@ public class MainPageController extends AbstractController{
     @GetMapping(value = "/")
     public String index(Model model){
         boolean isLoggedIn = isLoggedIn();
-        User loggedInUser = getLoggedInUser();
-
+        User loggedInUser = null;
+        if (isLoggedIn){
+            loggedInUser = getLoggedInUser();
+        }
         model.addAttribute("isLoggedIn", isLoggedIn);
         model.addAttribute("loggedInUser", loggedInUser);
 

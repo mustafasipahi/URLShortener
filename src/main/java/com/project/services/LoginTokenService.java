@@ -4,7 +4,6 @@ import com.project.model.LoginToken;
 import com.project.model.UrlShortener;
 import com.project.model.User;
 import com.project.repository.LoginTokenRepository;
-import com.project.services.baseservice.MyEntityService;
 import com.project.util.Constants;
 import com.project.util.LoginType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,28 +13,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
+
 @Service
-public class LoginTokenService implements MyEntityService<LoginToken> {
+public class LoginTokenService {
 
     @Autowired
     private LoginTokenRepository repository;
 
-    @Override
-    public long count() {
-        return repository.count();
-    }
-
-    @Override
     public LoginToken save(LoginToken entity) {
         return repository.save(entity);
     }
 
-    @Override
-    public void delete(Integer id) {
-        repository.deleteById(id);
-    }
-
-    @Override
     public Optional<LoginToken> findById(Integer id) {
         return repository.findById(id);
     }
@@ -44,16 +33,10 @@ public class LoginTokenService implements MyEntityService<LoginToken> {
         return repository.findByUUID(UUID);
     }
 
-    public LoginToken findByUserId(Integer userId){
+    public Optional<LoginToken> findByUserId(Integer userId){
         return repository.findByUserId(userId);
     }
 
-    @Override
-    public List<LoginToken> findAll() {
-        return repository.findAll();
-    }
-
-    @Override
     public boolean existById(Integer id) {
         return findById(id).isPresent();
     }
@@ -80,7 +63,6 @@ public class LoginTokenService implements MyEntityService<LoginToken> {
     }
 
     private String newUUID(){
-        String UUID = java.util.UUID.randomUUID().toString();
-        return UUID;
+        return randomUUID().toString();
     }
 }

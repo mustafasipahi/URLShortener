@@ -70,8 +70,44 @@ public class UrlShortener extends MyEntity {
         this.tokenId = tokenId;
     }
 
-    public String getKey() {
-        final String shortUrl = getShortUrl();
-        return shortUrl.substring(22, shortUrl.length());
+    public static final class UrlShortenerBuilder {
+        private final UrlShortener urlShortener;
+
+        private UrlShortenerBuilder() {
+            urlShortener = new UrlShortener();
+        }
+
+        public static UrlShortenerBuilder anUrlShortener() {
+            return new UrlShortenerBuilder();
+        }
+
+        public UrlShortenerBuilder id(int id) {
+            urlShortener.setId(id);
+            return this;
+        }
+
+        public UrlShortenerBuilder shortUrl(String shortUrl) {
+            urlShortener.setShortUrl(shortUrl);
+            return this;
+        }
+
+        public UrlShortenerBuilder longUrl(String longUrl) {
+            urlShortener.setLongUrl(longUrl);
+            return this;
+        }
+
+        public UrlShortenerBuilder createdDate(Date createdDate) {
+            urlShortener.setCreatedDate(createdDate);
+            return this;
+        }
+
+        public UrlShortenerBuilder tokenId(LoginToken tokenId) {
+            urlShortener.setTokenId(tokenId);
+            return this;
+        }
+
+        public UrlShortener build() {
+            return urlShortener;
+        }
     }
 }

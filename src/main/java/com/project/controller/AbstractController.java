@@ -28,12 +28,12 @@ public abstract class AbstractController {
         return attributes.getResponse();
     }
 
-    private Cookie getCookie(Cookie[] cookies, String name){
+    private Cookie getCookie(Cookie[] cookies){
         if (cookies == null){
             return null;
         }
         for(Cookie cookie : cookies){
-            if (cookie.getName().equals(name)) return cookie;
+            if (cookie.getName().equals(Constants.LOGGIN_TOKEN_COOKIE_NAME)) return cookie;
         }
         return null;
     }
@@ -41,7 +41,7 @@ public abstract class AbstractController {
     public LoginToken getLoginToken(){
         HttpServletRequest request = getHttpRequest();
         Cookie[] cookies = request.getCookies();
-        Cookie cookie = getCookie(cookies, Constants.LOGGIN_TOKEN_COOKIE_NAME);
+        Cookie cookie = getCookie(cookies);
         LoginToken loginToken = null;
         if (cookie == null){
             loginToken = createAnonymousLoginToken();
@@ -72,6 +72,7 @@ public abstract class AbstractController {
         LoginToken loginToken = getLoginToken();
         return (loginToken.getType() == LoginType.ANONYMOUS);
     }
+
     public User getLoggedInUser(){
         if (isLoggedIn()){
             return getLoginToken().getUser();

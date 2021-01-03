@@ -34,14 +34,14 @@ public class UrlShortenerController extends AbstractController{
         String shortUrl = urlShortenerService.shorten(longUrl, loginToken);
 
         redirectAttributes.addFlashAttribute("newUrl", true);
-        redirectAttributes.addFlashAttribute("shortUrl", shortUrl);
+        redirectAttributes.addFlashAttribute("shortUrl", Constants.LOCAL_HOST + "r/" + shortUrl);
 
         return "redirect:/";
     }
 
-    @GetMapping("/{shortUrl}")
+    @GetMapping("/r/{shortUrl}")
     public String goToUrl(@PathVariable String shortUrl){
-        return urlShortenerService.findByShortUrl(Constants.LOCAL_HOST + shortUrl)
+        return urlShortenerService.findByShortUrl(shortUrl)
                 .map(urlShortener -> "redirect:" + urlShortener.getLongUrl())
                 .orElse("redirect:/404");
     }
